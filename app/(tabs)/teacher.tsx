@@ -15,7 +15,8 @@ import {
 import QRCode from 'react-native-qrcode-svg';
 
 import AppButton from '@/components/AppButton';
-import { COLORS } from '@/constants/colors';
+import { COLORS, TINTS } from '@/constants/colors';
+import { HIT, RADIUS, SHADOWS, SPACING, TEXT } from '@/constants/theme';
 import { createEvent } from '@/lib/events';
 import { buildQRPayload } from '@/lib/qr';
 import { useRole } from '@/lib/useRole';
@@ -136,15 +137,15 @@ export default function TeacherScreen() {
   if (role !== 'teacher') {
     return (
       <View style={[styles.container, styles.centerContent]}>
-        <Ionicons
-          name="lock-closed-outline"
-          size={48}
-          color={COLORS.textSecondary}
-        />
-        <Text style={styles.lockedTitle}>Teachers Only</Text>
-        <Text style={styles.lockedSubtitle}>
-          Only teacher accounts can create events.
-        </Text>
+        <View style={styles.stateCard}>
+          <View style={styles.stateIcon}>
+            <Ionicons name="lock-closed-outline" size={44} color={COLORS.primary} />
+          </View>
+          <Text style={styles.lockedTitle}>Teachers Only</Text>
+          <Text style={styles.lockedSubtitle}>
+            Only teacher accounts can create events.
+          </Text>
+        </View>
       </View>
     );
   }
@@ -160,50 +161,68 @@ export default function TeacherScreen() {
         Fill in the event details, then scan the generated QR with the Scan tab.
       </Text>
 
-      <Text style={styles.label}>Event Title</Text>
-      <TextInput
-        style={styles.input}
-        value={title}
-        onChangeText={setTitle}
-        placeholder="e.g. Founders Day Assembly"
-        placeholderTextColor={COLORS.textSecondary}
-      />
+      <View style={styles.formCard}>
+        <Text style={styles.label}>Event Title</Text>
+        <View style={styles.inputWrap}>
+          <Ionicons
+            name="text-outline"
+            size={18}
+            color={COLORS.primary}
+            style={styles.inputIcon}
+          />
+          <TextInput
+            style={styles.input}
+            value={title}
+            onChangeText={setTitle}
+            placeholder="e.g. Founders Day Assembly"
+            placeholderTextColor={COLORS.textSecondary}
+          />
+        </View>
 
-      <Text style={styles.label}>Event Code</Text>
-      <TextInput
-        style={styles.input}
-        value={eventId}
-        onChangeText={setEventId}
-        placeholder="e.g. EVT-2026-0002"
-        placeholderTextColor={COLORS.textSecondary}
-        autoCapitalize="characters"
-      />
+        <Text style={styles.label}>Event Code</Text>
+        <View style={styles.inputWrap}>
+          <Ionicons
+            name="pricetag-outline"
+            size={18}
+            color={COLORS.primary}
+            style={styles.inputIcon}
+          />
+          <TextInput
+            style={styles.input}
+            value={eventId}
+            onChangeText={setEventId}
+            placeholder="e.g. EVT-2026-0002"
+            placeholderTextColor={COLORS.textSecondary}
+            autoCapitalize="characters"
+          />
+        </View>
 
-      <Text style={styles.label}>Starts</Text>
-      <PickerField
-        value={formatDateTime(startDate)}
-        icon="sunny-outline"
-        onPress={() => openPicker('start')}
-      />
+        <Text style={styles.label}>Starts</Text>
+        <PickerField
+          value={formatDateTime(startDate)}
+          icon="sunny-outline"
+          onPress={() => openPicker('start')}
+        />
 
-      <Text style={styles.label}>Ends</Text>
-      <PickerField
-        value={formatDateTime(endDate)}
-        icon="moon-outline"
-        onPress={() => openPicker('end')}
-      />
-      <View style={styles.chipRow}>
-        {QUICK_END_OPTIONS.map((option) => (
-          <Pressable
-            key={option.label}
-            style={styles.chip}
-            onPress={() => handleQuickEnd(option.ms)}
-          >
-            <Text style={styles.chipText}>{option.label}</Text>
-          </Pressable>
-        ))}
+        <Text style={styles.label}>Ends</Text>
+        <PickerField
+          value={formatDateTime(endDate)}
+          icon="moon-outline"
+          onPress={() => openPicker('end')}
+        />
+        <View style={styles.chipRow}>
+          {QUICK_END_OPTIONS.map((option) => (
+            <Pressable
+              key={option.label}
+              style={styles.chip}
+              onPress={() => handleQuickEnd(option.ms)}
+            >
+              <Text style={styles.chipText}>{option.label}</Text>
+            </Pressable>
+          ))}
+        </View>
+        <Text style={styles.hint}>Tap a chip to set the end time from start.</Text>
       </View>
-      <Text style={styles.hint}>Tap a chip to set the end time from start.</Text>
 
       {message && <Text style={styles.message}>{message}</Text>}
 
@@ -265,138 +284,163 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
   },
   content: {
-    paddingHorizontal: 24,
-    paddingTop: 24,
-    paddingBottom: 40,
+    paddingHorizontal: SPACING.lg,
+    paddingTop: SPACING.lg,
+    paddingBottom: SPACING.xxxl,
   },
   centerContent: {
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 24,
+    padding: SPACING.lg,
   },
   lockedTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: COLORS.textPrimary,
-    marginTop: 12,
-    marginBottom: 4,
+    ...TEXT.title,
     textAlign: 'center',
+    marginTop: SPACING.sm,
+    marginBottom: SPACING.xxs,
   },
   lockedSubtitle: {
-    fontSize: 14,
-    color: COLORS.textSecondary,
+    ...TEXT.meta,
     textAlign: 'center',
-    lineHeight: 20,
+    lineHeight: 21,
   },
   title: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: COLORS.textPrimary,
-    marginBottom: 4,
+    ...TEXT.display,
+    marginBottom: SPACING.xxs,
   },
   subtitle: {
-    fontSize: 14,
-    color: COLORS.textSecondary,
-    lineHeight: 20,
-    marginBottom: 16,
+    ...TEXT.meta,
+    lineHeight: 21,
+    marginBottom: SPACING.lg,
+  },
+  formCard: {
+    backgroundColor: TINTS.white,
+    borderRadius: RADIUS.card,
+    padding: SPACING.lg,
+    marginBottom: SPACING.lg,
+    ...SHADOWS.card,
   },
   label: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: COLORS.textPrimary,
-    marginBottom: 6,
-    marginTop: 10,
+    ...TEXT.label,
+    marginBottom: SPACING.xs,
+    marginTop: SPACING.md,
+  },
+  inputWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: TINTS.wash,
+    borderRadius: RADIUS.field,
+    paddingHorizontal: SPACING.md,
+    minHeight: HIT.min + 8,
   },
   input: {
-    backgroundColor: COLORS.card,
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    fontSize: 15,
+    flex: 1,
+    fontSize: 16,
+    fontWeight: '600',
     color: COLORS.textPrimary,
+    paddingVertical: SPACING.sm,
+  },
+  inputIcon: {
+    marginRight: SPACING.xs,
   },
   pickerField: {
-    backgroundColor: COLORS.card,
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    paddingHorizontal: 14,
-    paddingVertical: 14,
+    backgroundColor: TINTS.wash,
+    borderRadius: RADIUS.field,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.md,
+    minHeight: HIT.min + 8,
     flexDirection: 'row',
     alignItems: 'center',
   },
   pickerFieldPressed: {
-    backgroundColor: COLORS.surface,
+    backgroundColor: TINTS.washDeep,
+    opacity: 0.9,
   },
   pickerValue: {
     flex: 1,
-    fontSize: 15,
-    fontWeight: '500',
-    color: COLORS.textPrimary,
-    marginHorizontal: 10,
+    ...TEXT.body,
+    fontWeight: '600',
+    marginHorizontal: SPACING.sm,
   },
   chipRow: {
     flexDirection: 'row',
-    marginTop: 8,
+    marginTop: SPACING.sm,
   },
   chip: {
-    backgroundColor: COLORS.surface,
-    borderRadius: 999,
-    paddingHorizontal: 14,
-    paddingVertical: 7,
-    marginRight: 8,
+    minHeight: HIT.min,
+    justifyContent: 'center',
+    backgroundColor: TINTS.white,
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
+    borderRadius: RADIUS.chip,
+    paddingHorizontal: SPACING.md,
+    marginRight: SPACING.xs,
   },
   chipText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: COLORS.primary,
+    ...TEXT.chip,
+    color: COLORS.primaryInk,
   },
   hint: {
-    fontSize: 12,
-    color: COLORS.textSecondary,
-    marginTop: 6,
+    ...TEXT.hint,
+    marginTop: SPACING.xs,
   },
   pickerContainer: {
-    marginTop: 12,
+    marginTop: SPACING.sm,
     alignItems: 'center',
   },
   message: {
-    fontSize: 14,
-    color: COLORS.primary,
+    ...TEXT.chip,
+    color: COLORS.primaryInk,
     textAlign: 'center',
-    marginTop: 12,
+    marginTop: SPACING.md,
+    backgroundColor: TINTS.wash,
+    borderRadius: RADIUS.chip,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    overflow: 'hidden',
   },
   resultCard: {
-    backgroundColor: COLORS.card,
-    borderRadius: 14,
-    padding: 16,
-    marginTop: 20,
+    backgroundColor: TINTS.white,
+    borderRadius: RADIUS.card,
+    padding: SPACING.xl,
+    marginTop: SPACING.lg,
     alignItems: 'center',
-    shadowColor: COLORS.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    ...SHADOWS.card,
   },
   resultTitle: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: COLORS.textPrimary,
+    ...TEXT.cardTitle,
     textAlign: 'center',
-    marginBottom: 12,
+    marginBottom: SPACING.md,
   },
   qrBox: {
-    backgroundColor: '#FFFFFF',
-    padding: 12,
-    borderRadius: 10,
-    marginBottom: 12,
+    backgroundColor: TINTS.white,
+    padding: SPACING.lg,
+    borderRadius: RADIUS.tile,
+    marginBottom: SPACING.md,
+    borderWidth: 2,
+    borderColor: TINTS.wash,
   },
   payloadText: {
-    fontSize: 12,
-    color: COLORS.textSecondary,
+    ...TEXT.hint,
     textAlign: 'center',
-    lineHeight: 16,
+    lineHeight: 18,
+  },
+  stateCard: {
+    width: '100%',
+    maxWidth: 420,
+    alignItems: 'center',
+    backgroundColor: TINTS.white,
+    borderRadius: RADIUS.card,
+    padding: SPACING.xl,
+    ...SHADOWS.card,
+  },
+  stateIcon: {
+    width: 88,
+    height: 88,
+    borderRadius: RADIUS.pill,
+    backgroundColor: TINTS.wash,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: SPACING.md,
   },
 });

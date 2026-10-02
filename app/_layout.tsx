@@ -1,7 +1,8 @@
 import { Redirect, Stack, useSegments } from 'expo-router';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
-import { COLORS } from '@/constants/colors';
+import { COLORS, TINTS } from '@/constants/colors';
+import { RADIUS, SHADOWS } from '@/constants/theme';
 import { AuthProvider, useAuth } from '@/lib/auth';
 
 function RootNavigator() {
@@ -11,7 +12,9 @@ function RootNavigator() {
   if (loading) {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.background }}>
-        <ActivityIndicator size="large" color={COLORS.primary} />
+        <View style={styles.splashCard}>
+          <ActivityIndicator size="large" color={COLORS.primary} />
+        </View>
       </View>
     );
   }
@@ -39,3 +42,15 @@ export default function RootLayout() {
     </AuthProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  splashCard: {
+    width: 96,
+    height: 96,
+    borderRadius: RADIUS.pill,
+    backgroundColor: TINTS.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...SHADOWS.card,
+  },
+});

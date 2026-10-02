@@ -1,7 +1,8 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { COLORS } from '@/constants/colors';
+import { COLORS, TINTS } from '@/constants/colors';
+import { HIT, PRESSED, RADIUS, SHADOWS, SPACING, TEXT } from '@/constants/theme';
 
 type Props = {
   title: string;
@@ -16,19 +17,23 @@ export default function AppButton({ title, icon, theme, onPress }: Props) {
   return (
     <View style={styles.buttonOuter}>
       <Pressable
-        style={[
+        style={({ pressed }) => [
           styles.buttonInner,
           isPrimary ? styles.primaryFill : styles.secondaryFill,
+          isPrimary && styles.primaryShadow,
+          pressed && PRESSED,
         ]}
         onPress={onPress}
       >
-        <Ionicons
-          name={icon}
-          size={22}
-          color={isPrimary ? COLORS.textOnPrimary : COLORS.textSecondary}
-          style={styles.icon}
-        />
-        <Text style={[styles.label, isPrimary && styles.primaryLabel]}>
+        <View style={isPrimary ? styles.primaryIconPill : styles.secondaryIconPill}>
+          <Ionicons
+            name={icon}
+            size={20}
+            color={isPrimary ? COLORS.primary : COLORS.textPrimary}
+            style={styles.icon}
+          />
+        </View>
+        <Text style={[styles.label, isPrimary ? styles.primaryLabel : styles.secondaryLabel]}>
           {title}
         </Text>
       </Pressable>
@@ -39,26 +44,56 @@ export default function AppButton({ title, icon, theme, onPress }: Props) {
 const styles = StyleSheet.create({
   buttonOuter: {
     width: '100%',
-    marginBottom: 14,
+    marginBottom: SPACING.sm,
   },
   buttonInner: {
-    borderRadius: 10,
-    borderWidth: 1,
-    paddingVertical: 16,
-    paddingHorizontal: 20,
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    flexDirection: 'row',
+    borderRadius: RADIUS.pill,
+    paddingVertical: SPACING.sm,
+    paddingHorizontal: SPACING.xl,
+    minHeight: HIT.min + 14,
   },
   primaryFill: {
-    backgroundColor: COLORS.primary,
-    borderColor: COLORS.primary,
+    backgroundColor: COLORS.primaryInk,
+  },
+  primaryShadow: {
+    ...SHADOWS.pill,
   },
   secondaryFill: {
-    backgroundColor: COLORS.card,
+    backgroundColor: TINTS.white,
+    borderWidth: 1.5,
     borderColor: COLORS.border,
   },
-  icon: { paddingRight: 10 },
-  label: { fontSize: 17, fontWeight: '600', color: COLORS.textPrimary },
-  primaryLabel: { fontSize: 17, fontWeight: '700', color: COLORS.textOnPrimary },
+  primaryIconPill: {
+    width: 32,
+    height: 32,
+    borderRadius: RADIUS.pill,
+    backgroundColor: TINTS.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: SPACING.xs,
+  },
+  secondaryIconPill: {
+    width: 32,
+    height: 32,
+    borderRadius: RADIUS.pill,
+    backgroundColor: TINTS.wash,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: SPACING.xs,
+  },
+  icon: {
+    marginRight: 0,
+  },
+  label: TEXT.button,
+  primaryLabel: {
+    ...TEXT.button,
+    color: COLORS.textOnPrimary,
+  },
+  secondaryLabel: {
+    ...TEXT.button,
+    color: COLORS.textPrimary,
+  },
 });

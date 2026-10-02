@@ -10,7 +10,8 @@ import {
   View,
 } from 'react-native';
 
-import { COLORS } from '@/constants/colors';
+import { COLORS, STATUS, TINTS } from '@/constants/colors';
+import { RADIUS, SHADOWS, SPACING, TEXT } from '@/constants/theme';
 import { useAuth } from '@/lib/auth';
 import { getAttendanceHistory, type AttendanceRecord } from '@/lib/attendance';
 import {
@@ -90,10 +91,15 @@ export default function HistoryScreen() {
         <Text style={styles.subtitle}>Events you created and who attended</Text>
 
         {teacherSummary.length === 0 ? (
-          <Text style={styles.subtitle}>
-            No events yet. Create one in the Teacher tab to start tracking
-            attendance.
-          </Text>
+          <View style={styles.emptyCard}>
+            <View style={styles.emptyIcon}>
+              <Ionicons name="calendar-outline" size={40} color={COLORS.primary} />
+            </View>
+            <Text style={styles.emptyText}>
+              No events yet. Create one in the Teacher tab to start tracking
+              attendance.
+            </Text>
+          </View>
         ) : (
           <ScrollView
             contentContainerStyle={styles.list}
@@ -107,8 +113,19 @@ export default function HistoryScreen() {
                     style={styles.cardHeader}
                     onPress={() => handleExpand(item.eventId)}
                   >
-                    <Text style={styles.eventTitle}>{item.title}</Text>
+                    <View style={styles.tile}>
+                      <Ionicons
+                        name="ticket-outline"
+                        size={22}
+                        color={COLORS.primary}
+                      />
+                    </View>
+                    <View style={styles.cardHeaderText}>
+                      <Text style={styles.eventTitle}>{item.title}</Text>
+                      <Text style={styles.eventMeta}>{item.eventCode}</Text>
+                    </View>
                     <View style={styles.countBadge}>
+                      <Ionicons name="people" size={13} color={TINTS.white} />
                       <Text style={styles.countBadgeText}>
                         {item.attendeeCount}
                       </Text>
@@ -120,7 +137,6 @@ export default function HistoryScreen() {
                       style={styles.chevron}
                     />
                   </Pressable>
-                  <Text style={styles.eventMeta}>{item.eventCode}</Text>
                   {item.startTime && (
                     <Text style={styles.eventMeta}>
                       {formatDate(item.startTime)}
@@ -150,11 +166,18 @@ export default function HistoryScreen() {
                             key={attendee.studentId}
                             style={styles.attendeeRow}
                           >
+                            <View style={styles.attendeeAvatar}>
+                              <Ionicons
+                                name="person"
+                                size={16}
+                                color={COLORS.primary}
+                              />
+                            </View>
                             <Text style={styles.attendeeText}>
                               {attendee.studentName ||
                                 shortId(attendee.studentId)}
                             </Text>
-                            <Text style={styles.attendeeMeta}>
+                            <Text style={styles.attendeeMeta} numberOfLines={1}>
                               {formatDate(attendee.scannedAt)}
                             </Text>
                           </View>
@@ -176,17 +199,35 @@ export default function HistoryScreen() {
       <Text style={styles.title}>Attendance History</Text>
 
       {studentRecords.length === 0 ? (
-        <Text style={styles.subtitle}>
-          No records yet. Scan a QR code to register your attendance.
-        </Text>
+        <View style={styles.emptyCard}>
+          <View style={styles.emptyIcon}>
+            <Ionicons name="time-outline" size={40} color={COLORS.primary} />
+          </View>
+          <Text style={styles.emptyText}>
+            No records yet. Scan a QR code to register your attendance.
+          </Text>
+        </View>
       ) : (
         <FlatList
           data={studentRecords}
           keyExtractor={(item) => String(item.id)}
           contentContainerStyle={styles.list}
+          showsVerticalScrollIndicator={false}
           renderItem={({ item }) => (
             <View style={styles.card}>
-              <Text style={styles.eventTitle}>{item.eventTitle}</Text>
+              <View style={styles.recordTop}>
+                <View style={styles.tile}>
+                  <Ionicons
+                    name="checkmark-done-outline"
+                    size={22}
+                    color={COLORS.primary}
+                  />
+                </View>
+                <Text style={styles.eventTitle}>{item.eventTitle}</Text>
+                <View style={styles.presentBadge}>
+                  <Text style={styles.presentBadgeText}>Present</Text>
+                </View>
+              </View>
               <Text style={styles.eventMeta}>{item.eventId}</Text>
               <Text style={styles.eventMeta}>{formatDate(item.scannedAt)}</Text>
             </View>
@@ -209,96 +250,150 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
-    paddingHorizontal: 24,
-    paddingTop: 24,
+    paddingHorizontal: SPACING.lg,
+    paddingTop: SPACING.lg,
   },
   title: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: COLORS.textPrimary,
-    marginBottom: 4,
+    ...TEXT.display,
+    marginBottom: SPACING.xxs,
   },
   subtitle: {
-    fontSize: 14,
-    color: COLORS.textSecondary,
+    ...TEXT.meta,
     textAlign: 'center',
-    lineHeight: 20,
-    marginTop: 8,
-    marginBottom: 12,
+    marginTop: SPACING.xs,
+    marginBottom: SPACING.md,
   },
   list: {
-    paddingBottom: 24,
+    paddingBottom: SPACING.xl,
   },
   card: {
-    backgroundColor: COLORS.card,
-    borderRadius: 14,
-    padding: 16,
-    marginBottom: 12,
-    shadowColor: COLORS.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    backgroundColor: TINTS.white,
+    borderRadius: RADIUS.card,
+    padding: SPACING.lg,
+    marginBottom: SPACING.md,
+    ...SHADOWS.card,
   },
   cardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 4,
+    marginBottom: SPACING.xs,
+  },
+  cardHeaderText: {
+    flex: 1,
+    paddingRight: SPACING.xs,
+  },
+  recordTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: SPACING.xs,
+  },
+  tile: {
+    width: 44,
+    height: 44,
+    borderRadius: RADIUS.pill,
+    backgroundColor: TINTS.wash,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: SPACING.sm,
   },
   eventTitle: {
+    ...TEXT.cardTitle,
     flex: 1,
-    fontSize: 16,
-    fontWeight: '600',
-    color: COLORS.textPrimary,
+    paddingRight: SPACING.xs,
   },
   countBadge: {
-    backgroundColor: '#2E7D32',
-    borderRadius: 999,
-    minWidth: 28,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
+    flexDirection: 'row',
     alignItems: 'center',
-    marginLeft: 8,
+    backgroundColor: COLORS.primaryInk,
+    borderRadius: RADIUS.badge,
+    minWidth: 34,
+    paddingHorizontal: SPACING.xs,
+    paddingVertical: 5,
+    justifyContent: 'center',
   },
   countBadgeText: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#FFFFFF',
+    ...TEXT.badge,
+    color: TINTS.white,
+    marginLeft: 4,
+  },
+  presentBadge: {
+    backgroundColor: STATUS.present.bg,
+    borderRadius: RADIUS.badge,
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: 5,
+  },
+  presentBadgeText: {
+    ...TEXT.badge,
+    color: STATUS.present.fg,
   },
   chevron: {
-    marginLeft: 8,
+    marginLeft: SPACING.xs,
   },
   expandHint: {
-    fontSize: 12,
-    color: COLORS.textSecondary,
+    ...TEXT.hint,
     fontStyle: 'italic',
-    marginTop: 6,
+    marginTop: SPACING.xs,
   },
   eventMeta: {
-    fontSize: 13,
-    color: COLORS.textSecondary,
+    ...TEXT.meta,
     marginTop: 2,
   },
   separator: {
     alignSelf: 'stretch',
     height: 1,
-    backgroundColor: COLORS.primaryDark,
-    opacity: 0.2,
-    marginVertical: 10,
+    backgroundColor: COLORS.border,
+    marginVertical: SPACING.sm,
   },
   attendeeRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 4,
+    backgroundColor: TINTS.wash,
+    borderRadius: RADIUS.badge,
+    paddingVertical: SPACING.xs,
+    paddingHorizontal: SPACING.sm,
+    marginTop: SPACING.xs,
+  },
+  attendeeAvatar: {
+    width: 28,
+    height: 28,
+    borderRadius: RADIUS.pill,
+    backgroundColor: TINTS.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: SPACING.xs,
   },
   attendeeText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: COLORS.textPrimary,
+    ...TEXT.body,
+    fontWeight: '700',
+    flex: 1,
+    flexShrink: 1,
   },
   attendeeMeta: {
-    fontSize: 12,
+    ...TEXT.hint,
+    flexShrink: 0,
+    marginLeft: SPACING.xs,
+  },
+  emptyCard: {
+    alignItems: 'center',
+    backgroundColor: TINTS.white,
+    borderRadius: RADIUS.card,
+    padding: SPACING.xl,
+    marginTop: SPACING.lg,
+    ...SHADOWS.card,
+  },
+  emptyIcon: {
+    width: 84,
+    height: 84,
+    borderRadius: RADIUS.pill,
+    backgroundColor: TINTS.wash,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: SPACING.md,
+  },
+  emptyText: {
+    ...TEXT.body,
     color: COLORS.textSecondary,
+    textAlign: 'center',
+    lineHeight: 21,
   },
 });

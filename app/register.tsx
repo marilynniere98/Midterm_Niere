@@ -12,12 +12,21 @@ import {
   Keyboard,
   Pressable,
 } from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { Link, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import AppButton from '@/components/AppButton';
 import Header from '@/components/Header';
-import { COLORS } from '@/constants/colors';
+import { COLORS, STATUS, TINTS } from '@/constants/colors';
+import {
+  PRESSED,
+  RADIUS,
+  SHADOWS,
+  SHARED,
+  SPACING,
+  TEXT,
+} from '@/constants/theme';
 import { signUp } from '@/lib/auth';
 
 export default function RegisterScreen() {
@@ -89,11 +98,11 @@ export default function RegisterScreen() {
               <Header title="QR Attendance" />
             </View>
 
-            <Text style={styles.title}>Create Account</Text>
-            <Text style={styles.subtitle}>Register to start recording attendance</Text>
-
             {success ? (
               <View style={styles.successContainer}>
+                <View style={styles.successIcon}>
+                  <Ionicons name="mail-open-outline" size={40} color={COLORS.primary} />
+                </View>
                 <Text style={styles.successTitle}>Check your email!</Text>
                 <Text style={styles.successText}>
                   We sent a confirmation link to {email}. Click the link to verify your
@@ -104,55 +113,94 @@ export default function RegisterScreen() {
                 </Link>
               </View>
             ) : (
-              <View style={styles.form}>
+              <View style={styles.formCard}>
+                <Text style={styles.title}>Create Account</Text>
+                <Text style={styles.subtitle}>Register to start recording attendance</Text>
+                <View style={styles.form}>
                 <Text style={styles.label}>Full Name</Text>
-                <TextInput
-                  style={styles.input}
-                  value={fullName}
-                  onChangeText={setFullName}
-                  placeholder="e.g. Juan Dela Cruz"
-                  placeholderTextColor={COLORS.textSecondary}
-                  editable={!loading}
-                />
+                <View style={styles.fieldWrap}>
+                  <Ionicons
+                    name="person-outline"
+                    size={20}
+                    color={COLORS.primary}
+                    style={styles.inputIcon}
+                  />
+                  <TextInput
+                    style={styles.input}
+                    value={fullName}
+                    onChangeText={setFullName}
+                    placeholder="e.g. Juan Dela Cruz"
+                    placeholderTextColor={COLORS.textSecondary}
+                    editable={!loading}
+                  />
+                </View>
 
                 <Text style={styles.label}>Email</Text>
-                <TextInput
-                  style={styles.input}
-                  value={email}
-                  onChangeText={setEmail}
-                  placeholder="your.email@school.edu"
-                  placeholderTextColor={COLORS.textSecondary}
-                  autoCapitalize="none"
-                  keyboardType="email-address"
-                  editable={!loading}
-                />
+                <View style={styles.fieldWrap}>
+                  <Ionicons
+                    name="mail-outline"
+                    size={20}
+                    color={COLORS.primary}
+                    style={styles.inputIcon}
+                  />
+                  <TextInput
+                    style={styles.input}
+                    value={email}
+                    onChangeText={setEmail}
+                    placeholder="your.email@school.edu"
+                    placeholderTextColor={COLORS.textSecondary}
+                    autoCapitalize="none"
+                    keyboardType="email-address"
+                    editable={!loading}
+                  />
+                </View>
 
                 <Text style={styles.label}>Password</Text>
-                <TextInput
-                  style={styles.input}
-                  value={password}
-                  onChangeText={setPassword}
-                  placeholder="At least 6 characters"
-                  placeholderTextColor={COLORS.textSecondary}
-                  secureTextEntry
-                  editable={!loading}
-                />
+                <View style={styles.fieldWrap}>
+                  <Ionicons
+                    name="lock-closed-outline"
+                    size={20}
+                    color={COLORS.primary}
+                    style={styles.inputIcon}
+                  />
+                  <TextInput
+                    style={styles.input}
+                    value={password}
+                    onChangeText={setPassword}
+                    placeholder="At least 6 characters"
+                    placeholderTextColor={COLORS.textSecondary}
+                    secureTextEntry
+                    editable={!loading}
+                  />
+                </View>
 
                 <Text style={styles.label}>Confirm Password</Text>
-                <TextInput
-                  style={styles.input}
-                  value={confirmPassword}
-                  onChangeText={setConfirmPassword}
-                  placeholder="Re-enter your password"
-                  placeholderTextColor={COLORS.textSecondary}
-                  secureTextEntry
-                  editable={!loading}
-                />
+                <View style={styles.fieldWrap}>
+                  <Ionicons
+                    name="shield-checkmark-outline"
+                    size={20}
+                    color={COLORS.primary}
+                    style={styles.inputIcon}
+                  />
+                  <TextInput
+                    style={styles.input}
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
+                    placeholder="Re-enter your password"
+                    placeholderTextColor={COLORS.textSecondary}
+                    secureTextEntry
+                    editable={!loading}
+                  />
+                </View>
 
                 <Text style={styles.label}>I am a...</Text>
                 <View style={styles.roleRow}>
                   <Pressable
-                    style={[styles.roleChip, role === 'student' && styles.roleChipActive]}
+                    style={({ pressed }) => [
+                      styles.roleChip,
+                      role === 'student' && styles.roleChipActive,
+                      pressed && PRESSED,
+                    ]}
                     onPress={() => setRole('student')}
                     disabled={loading}
                   >
@@ -166,7 +214,11 @@ export default function RegisterScreen() {
                     </Text>
                   </Pressable>
                   <Pressable
-                    style={[styles.roleChip, role === 'teacher' && styles.roleChipActive]}
+                    style={({ pressed }) => [
+                      styles.roleChip,
+                      role === 'teacher' && styles.roleChipActive,
+                      pressed && PRESSED,
+                    ]}
                     onPress={() => setRole('teacher')}
                     disabled={loading}
                   >
@@ -186,14 +238,17 @@ export default function RegisterScreen() {
                 {loading ? (
                   <ActivityIndicator size="large" color={COLORS.primary} style={styles.loader} />
                 ) : (
-                  <AppButton
-                    theme="primary"
-                    title="Sign Up"
-                    icon="person-add-outline"
-                    onPress={handleRegister}
-                  />
+                  <View style={styles.primarySlot}>
+                    <AppButton
+                      theme="primary"
+                      title="Sign Up"
+                      icon="person-add-outline"
+                      onPress={handleRegister}
+                    />
+                  </View>
                 )}
               </View>
+            </View>
             )}
 
             {!success && (
@@ -218,106 +273,116 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    paddingHorizontal: 24,
-    paddingBottom: 40,
+    paddingHorizontal: SPACING.lg,
+    paddingBottom: SPACING.xxxl,
   },
   headerContainer: {
     alignItems: 'center',
-    marginTop: 20,
-    marginBottom: 16,
+    marginTop: SPACING.md,
+    marginBottom: SPACING.lg,
+  },
+  formCard: {
+    backgroundColor: TINTS.white,
+    borderRadius: RADIUS.card,
+    padding: SPACING.xl,
+    marginBottom: SPACING.xl,
+    ...SHADOWS.card,
   },
   title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: COLORS.textPrimary,
-    marginBottom: 4,
+    ...TEXT.display,
+    marginBottom: SPACING.xxs,
   },
   subtitle: {
-    fontSize: 15,
-    color: COLORS.textSecondary,
-    lineHeight: 21,
-    marginBottom: 32,
+    ...TEXT.meta,
+    marginBottom: SPACING.lg,
   },
   form: {
-    marginBottom: 24,
+    marginBottom: SPACING.xs,
   },
   label: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: COLORS.textPrimary,
-    marginBottom: 6,
-    marginTop: 10,
+    ...TEXT.label,
+    marginBottom: SPACING.xs,
+    marginTop: SPACING.lg,
   },
+  primarySlot: {
+    marginTop: SPACING.xl,
+  },
+  fieldWrap: SHARED.fieldWrap,
   input: {
-    backgroundColor: COLORS.card,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
+    flex: 1,
     fontSize: 16,
+    fontWeight: '500',
     color: COLORS.textPrimary,
+    paddingVertical: 15,
+  },
+  inputIcon: {
+    marginRight: SPACING.xs,
   },
   error: {
-    fontSize: 14,
+    ...TEXT.meta,
     color: COLORS.danger,
-    textAlign: 'left',
-    marginTop: 12,
-    marginBottom: 4,
+    fontWeight: '700',
+    backgroundColor: STATUS.absent.bg,
+    borderRadius: RADIUS.chip,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    marginTop: SPACING.md,
+    overflow: 'hidden',
   },
   roleRow: {
     flexDirection: 'row',
-    marginTop: 6,
+    marginTop: SPACING.xs,
   },
   roleChip: {
+    ...SHARED.chip,
     flex: 1,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    borderRadius: 10,
-    paddingVertical: 12,
-    alignItems: 'center',
-    backgroundColor: COLORS.card,
-    marginRight: 8,
+    marginRight: SPACING.xs,
   },
   roleChipActive: {
-    backgroundColor: COLORS.primary + '14',
-    borderColor: COLORS.primary,
+    backgroundColor: COLORS.textPrimary,
+    borderColor: COLORS.textPrimary,
   },
   roleChipText: {
-    fontSize: 15,
-    fontWeight: '600',
+    ...TEXT.chip,
     color: COLORS.textPrimary,
   },
   roleChipTextActive: {
-    fontWeight: '700',
+    color: TINTS.white,
   },
   loader: {
-    marginVertical: 16,
+    marginVertical: SPACING.lg,
   },
   link: {
-    fontSize: 14,
-    color: COLORS.primary,
+    ...TEXT.chip,
+    color: COLORS.primaryInk,
     textAlign: 'center',
-    fontWeight: '600',
   },
   successContainer: {
     alignItems: 'center',
-    marginBottom: 24,
-    padding: 20,
-    backgroundColor: COLORS.card,
-    borderRadius: 14,
+    marginBottom: SPACING.xl,
+    padding: SPACING.xl,
+    backgroundColor: TINTS.white,
+    borderRadius: RADIUS.card,
+    ...SHADOWS.card,
+  },
+  successIcon: {
+    width: 84,
+    height: 84,
+    borderRadius: RADIUS.pill,
+    backgroundColor: TINTS.wash,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: SPACING.md,
   },
   successTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: COLORS.textPrimary,
-    marginBottom: 8,
+    ...TEXT.section,
+    textAlign: 'center',
+    marginBottom: SPACING.xs,
   },
   successText: {
-    fontSize: 14,
-    color: COLORS.textSecondary,
+    ...TEXT.meta,
     textAlign: 'center',
-    lineHeight: 20,
-    marginBottom: 16,
+    lineHeight: 21,
+    marginBottom: SPACING.lg,
   },
 });

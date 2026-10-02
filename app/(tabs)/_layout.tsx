@@ -1,22 +1,44 @@
 import { Tabs } from 'expo-router';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
-import { COLORS } from '@/constants/colors';
+import { COLORS, TINTS } from '@/constants/colors';
+import { RADIUS, TEXT } from '@/constants/theme';
+
+function TabIcon({
+  focused,
+  icon,
+  activeIcon,
+  color,
+}: {
+  focused: boolean;
+  icon: keyof typeof Ionicons.glyphMap;
+  activeIcon: keyof typeof Ionicons.glyphMap;
+  color: string;
+}) {
+  return (
+    <View style={[styles.iconWrap, focused && styles.iconWrapActive]}>
+      <Ionicons name={focused ? activeIcon : icon} color={color} size={22} />
+    </View>
+  );
+}
 
 export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: COLORS.primary,
-        headerStyle: { backgroundColor: COLORS.background },
+        tabBarInactiveTintColor: COLORS.textSecondary,
+        headerStyle: {
+          backgroundColor: COLORS.background,
+          borderBottomWidth: 0,
+        },
         headerShadowVisible: false,
         headerTintColor: COLORS.textPrimary,
-        tabBarStyle: {
-          backgroundColor: COLORS.card,
-          borderTopColor: COLORS.border,
-          borderTopWidth: StyleSheet.hairlineWidth,
-        },
+        headerTitleStyle: styles.headerTitle,
+        headerTitleAlign: 'center',
+        tabBarLabelStyle: styles.tabLabel,
+        tabBarStyle: styles.tabBar,
       }}
     >
       <Tabs.Screen
@@ -24,10 +46,11 @@ export default function TabLayout() {
         options={{
           title: 'Home',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? 'home-sharp' : 'home-outline'}
+            <TabIcon
+              focused={focused}
+              icon="home-outline"
+              activeIcon="home-sharp"
               color={color}
-              size={24}
             />
           ),
         }}
@@ -37,10 +60,11 @@ export default function TabLayout() {
         options={{
           title: 'Scan',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? 'qr-code' : 'qr-code-outline'}
+            <TabIcon
+              focused={focused}
+              icon="qr-code-outline"
+              activeIcon="qr-code"
               color={color}
-              size={24}
             />
           ),
         }}
@@ -50,10 +74,11 @@ export default function TabLayout() {
         options={{
           title: 'History',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? 'time' : 'time-outline'}
+            <TabIcon
+              focused={focused}
+              icon="time-outline"
+              activeIcon="time"
               color={color}
-              size={24}
             />
           ),
         }}
@@ -63,10 +88,11 @@ export default function TabLayout() {
         options={{
           title: 'Profile',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? 'person' : 'person-outline'}
+            <TabIcon
+              focused={focused}
+              icon="person-outline"
+              activeIcon="person"
               color={color}
-              size={24}
             />
           ),
         }}
@@ -77,10 +103,11 @@ export default function TabLayout() {
         options={{
           title: 'Teacher',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? 'school' : 'school-outline'}
+            <TabIcon
+              focused={focused}
+              icon="school-outline"
+              activeIcon="school"
               color={color}
-              size={24}
             />
           ),
         }}
@@ -88,3 +115,34 @@ export default function TabLayout() {
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  headerTitle: {
+    ...TEXT.title,
+  },
+  tabBar: {
+    backgroundColor: TINTS.white,
+    borderTopWidth: 0,
+    shadowColor: COLORS.shadow,
+    shadowOffset: { width: 0, height: -6 },
+    shadowOpacity: 0.1,
+    shadowRadius: 16,
+    elevation: 12,
+  },
+  tabLabel: {
+    ...TEXT.chip,
+    fontSize: 11,
+    lineHeight: 13,
+    marginTop: 1,
+  },
+  iconWrap: {
+    width: 44,
+    height: 26,
+    borderRadius: RADIUS.pill,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconWrapActive: {
+    backgroundColor: TINTS.wash,
+  },
+});
